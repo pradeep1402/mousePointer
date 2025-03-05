@@ -1,3 +1,9 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     display: flex;
     justify-content: center;
@@ -14,7 +20,7 @@ body {
     position: absolute;
 }
 
-#parent {
+.parent {
     cursor: none;
     width: 50vw;
     height: 50vh;
@@ -31,7 +37,7 @@ span {
     font-family: system-ui;
 }
 
-#parent > span:hover {
+.parent > span:hover {
     transform: scale(1.8);
     transition: all 300ms ease-in-out 10ms;
 }

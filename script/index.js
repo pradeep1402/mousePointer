@@ -1,20 +1,23 @@
-const mouseHover = () => {
-  const parent = document.querySelector("#parent");
-  const div = document.createElement("div");
-  parent.appendChild(div);
-
-  parent.addEventListener("mouseenter", () => {
-    div.classList.add("cursorClass");
-  });
-
-  parent.addEventListener("mousemove", ({ clientX, clientY }) => {
-    div.style.top = `${clientY}px`;
-    div.style.left = `${clientX}px`;
-  });
-
-  parent.addEventListener("mouseleave", () => {
-    div.classList.remove("cursorClass");
-  });
+const removeAfterOneSec = (target, div) => {
+  setTimeout(() => {
+    target.removeChild(div);
+  }, 1000);
 };
 
-window.onload = mouseHover;
+const createDiv = ({ clientX, clientY, target }) => {
+  if (!(target.classList.contains('parent'))) return;
+
+  const div = document.createElement("div");
+  div.style.top = `${clientY}px`;
+  div.style.left = `${clientX}px`;
+  div.classList.add("cursorClass");
+  target.appendChild(div);
+
+  removeAfterOneSec(target, div);
+};
+
+const main = () => {
+  addEventListener("mousemove", createDiv);
+};
+
+window.onload = main;
