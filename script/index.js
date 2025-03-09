@@ -55,10 +55,18 @@ const toggleMouseDraw = (event) => {
   }
 };
 
+const removeElements = (event) => {
+  const parent = document.querySelector('.parent');
+  const children = document.querySelectorAll('.cursorClass');
+  children.forEach(child => parent.removeChild(child));
+};
+
 const main = () => {
   addEventListener("keydown", toggleMouseDraw);
   addEventListener("keyup", toggleMouseDraw);
   addEventListener("keydown", moveCursorUsingKeys);
+  const reset = document.querySelector('#reset-btn');
+  reset.addEventListener('click', removeElements);
 };
 
 window.onload = main;
