@@ -1,10 +1,6 @@
-const removeAfterOneSec = (target, div) => {
-  setTimeout(() => {
-    target.removeChild(div);
-  }, 1000);
-};
+const lastMousePos = { x: 0, y: 0 };
 
-const createDiv = ({ clientX, clientY, target }) => {
+const drawCircle = ({ clientX, clientY, target }) => {
   if (!(target.classList.contains('parent'))) return;
 
   const div = document.createElement("div");
@@ -13,11 +9,56 @@ const createDiv = ({ clientX, clientY, target }) => {
   div.classList.add("cursorClass");
   target.appendChild(div);
 
-  removeAfterOneSec(target, div);
+  lastMousePos.x = clientX;
+  lastMousePos.y = clientY;
+};
+
+const arrowKeys = {
+  'ArrowUp': (target) => {
+    return drawCircle({ clientX: lastMousePos.x, clientY: lastMousePos.y - 6, target });
+  },
+  'ArrowDown': (target) => {
+    return drawCircle({ clientX: lastMousePos.x, clientY: lastMousePos.y + 6, target });
+  },
+  'ArrowRight': (target) => {
+    return drawCircle({ clientX: lastMousePos.x + 6, clientY: lastMousePos.y, target });
+  },
+  'ArrowLeft': (target) => {
+    return drawCircle({ clientX: lastMousePos.x - 6, clientY: lastMousePos.y, target });
+  },
+};
+
+const isInBoundary = ({ x, right, top, bottom }) => {
+  if (lastMousePos.x - 4 >= x &&
+    right > lastMousePos.x + 4 &&
+    lastMousePos.y - 4 >= top &&
+    bottom > lastMousePos.y + 4) {
+    return true;
+  }
+
+  return false;
+};
+
+const moveCursorUsingKeys = ({ code }) => {
+  const parent = document.querySelector('.parent');
+  const coordinates = parent.getBoundingClientRect();
+
+  return isInBoundary(coordinates) && arrowKeys[code](parent);
+};
+
+const toggleMouseDraw = (event) => {
+  if (event.key === 'Control' && event.type === 'keydown') {
+    addEventListener("mousemove", drawCircle);
+  }
+  if (event.key === 'Control' && event.type === 'keyup') {
+    removeEventListener('mousemove', drawCircle);
+  }
 };
 
 const main = () => {
-  addEventListener("mousemove", createDiv);
+  addEventListener("keydown", toggleMouseDraw);
+  addEventListener("keyup", toggleMouseDraw);
+  addEventListener("keydown", moveCursorUsingKeys);
 };
 
 window.onload = main;
