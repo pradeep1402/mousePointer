@@ -1,12 +1,12 @@
 const lastMousePos = { x: 0, y: 0 };
 
 const drawCircle = ({ clientX, clientY, target }) => {
-  if (!(target.classList.contains('parent'))) return;
+  if (!(target.classList.contains('canvas'))) return;
 
   const div = document.createElement("div");
   div.style.top = `${clientY}px`;
   div.style.left = `${clientX}px`;
-  div.classList.add("cursorClass");
+  div.classList.add("dot");
   target.appendChild(div);
 
   lastMousePos.x = clientX;
@@ -40,24 +40,27 @@ const isInBoundary = ({ x, right, top, bottom }) => {
 };
 
 const moveCursorUsingKeys = ({ code }) => {
-  const parent = document.querySelector('.parent');
+  const parent = document.querySelector('.canvas');
   const coordinates = parent.getBoundingClientRect();
 
   return isInBoundary(coordinates) && arrowKeys[code](parent);
 };
 
 const toggleMouseDraw = (event) => {
-  if (event.key === 'Control' && event.type === 'keydown') {
+  console.log(event);
+  if (!(event.key === 'Control')) return;
+
+  if (event.type === 'keydown') {
     addEventListener("mousemove", drawCircle);
+    return;
   }
-  if (event.key === 'Control' && event.type === 'keyup') {
-    removeEventListener('mousemove', drawCircle);
-  }
+
+  removeEventListener('mousemove', drawCircle);
 };
 
-const removeElements = (event) => {
-  const parent = document.querySelector('.parent');
-  const children = document.querySelectorAll('.cursorClass');
+const clearCanvas = () => {
+  const parent = document.querySelector('.canvas');
+  const children = document.querySelectorAll('.dot');
   children.forEach(child => parent.removeChild(child));
 };
 
@@ -66,7 +69,7 @@ const main = () => {
   addEventListener("keyup", toggleMouseDraw);
   addEventListener("keydown", moveCursorUsingKeys);
   const reset = document.querySelector('#reset-btn');
-  reset.addEventListener('click', removeElements);
+  reset.addEventListener('click', clearCanvas);
 };
 
 window.onload = main;
