@@ -13,41 +13,34 @@ const drawCircle = ({ clientX, clientY, target }) => {
   lastMousePos.y = clientY;
 };
 
-const arrowKeys = {
-  'ArrowUp': (target) => {
-    return drawCircle({ clientX: lastMousePos.x, clientY: lastMousePos.y - 6, target });
-  },
-  'ArrowDown': (target) => {
-    return drawCircle({ clientX: lastMousePos.x, clientY: lastMousePos.y + 6, target });
-  },
-  'ArrowRight': (target) => {
-    return drawCircle({ clientX: lastMousePos.x + 6, clientY: lastMousePos.y, target });
-  },
-  'ArrowLeft': (target) => {
-    return drawCircle({ clientX: lastMousePos.x - 6, clientY: lastMousePos.y, target });
-  },
+const drawUsingArrowKeys = (code, canvas) => {
+  const coordinates = canvas.getBoundingClientRect();
+  let newX = lastMousePos.x;
+  let newY = lastMousePos.y;
+  const arrowKeys = {
+    'ArrowUp': () => newY -= 6,
+    'ArrowDown': () => newY += 6,
+    'ArrowLeft': () => newX -= 6,
+    'ArrowRight': () => newX += 6
+  };
+
+  arrowKeys[code]?.();
+
+  if (isInBoundary(newX, newY, coordinates)) {
+    drawCircle({ clientX: newX, clientY: newY, target: canvas });
+  }
 };
 
-const isInBoundary = ({ x, right, top, bottom }) => {
-  if (lastMousePos.x - 4 >= x &&
-    right > lastMousePos.x + 4 &&
-    lastMousePos.y - 4 >= top &&
-    bottom > lastMousePos.y + 4) {
-    return true;
-  }
-
-  return false;
+const isInBoundary = (newX, newY, { left, right, top, bottom }) => {
+  return newX >= left && newX <= right && newY >= top && newY <= bottom;
 };
 
 const moveCursorUsingKeys = ({ code }) => {
   const parent = document.querySelector('.canvas');
-  const coordinates = parent.getBoundingClientRect();
-
-  return isInBoundary(coordinates) && arrowKeys[code](parent);
+  drawUsingArrowKeys(code, parent);
 };
 
 const toggleMouseDraw = (event) => {
-  console.log(event);
   if (!(event.key === 'Control')) return;
 
   if (event.type === 'keydown') {
@@ -68,8 +61,7 @@ const main = () => {
   addEventListener("keydown", toggleMouseDraw);
   addEventListener("keyup", toggleMouseDraw);
   addEventListener("keydown", moveCursorUsingKeys);
-  const reset = document.querySelector('#reset-btn');
-  reset.addEventListener('click', clearCanvas);
+  document.querySelector('#reset-btn').reset.addEventListener('click', clearCanvas);
 };
 
 window.onload = main;
