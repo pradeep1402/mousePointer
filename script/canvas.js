@@ -17,6 +17,45 @@ class CanvasView {
   };
 }
 
+class CanvasController {
+  constructor(view) {
+    this.view = view;
+  }
+
+  isInBoundary = (newX, newY, { left, right, top, bottom }) => {
+    return newX >= left && newX <= right && newY >= top && newY <= bottom;
+  };
+
+  toggleMouseDraw = (event, shape) => {
+    if (!(event.key === 'Control')) return;
+
+    if (event.type === 'keydown') {
+      addEventListener("mousemove", (event) => this.view.drawShape(event, shape));
+      return;
+    }
+
+    removeEventListener('mousemove', this.view.drawShape);
+  };
+
+  drawUsingArrowKeys = ({ code }, lastMousePos) => {
+    const coordinates = this.target.getBoundingClientRect();
+    let newX = lastMousePos.x;
+    let newY = lastMousePos.y;
+    const arrowKeys = {
+      'ArrowUp': () => newY -= 6,
+      'ArrowDown': () => newY += 6,
+      'ArrowLeft': () => newX -= 6,
+      'ArrowRight': () => newX += 6
+    };
+
+    code in arrowKeys && arrowKeys[code]();
+
+    if (this.isInBoundary(newX, newY, coordinates)) {
+      this.view.drawShape({ clientX: newX, clientY: newY });
+    }
+  };
+}
+
 const main = () => {
   const parent = document.querySelector('canvas');
   const canvas = new CanvasView(parent);
