@@ -24,7 +24,7 @@ const drawUsingArrowKeys = (code, canvas) => {
     'ArrowRight': () => newX += 6
   };
 
-  arrowKeys[code]?.();
+  code in arrowKeys && arrowKeys[code]();
 
   if (isInBoundary(newX, newY, coordinates)) {
     drawCircle({ clientX: newX, clientY: newY, target: canvas });
@@ -52,16 +52,16 @@ const toggleMouseDraw = (event) => {
 };
 
 const clearCanvas = () => {
-  const parent = document.querySelector('.canvas');
-  const children = document.querySelectorAll('.dot');
-  children.forEach(child => parent.removeChild(child));
+  const canvas = document.querySelector('.canvas');
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach(child => canvas.removeChild(child));
 };
 
 const main = () => {
-  addEventListener("keydown", toggleMouseDraw);
-  addEventListener("keyup", toggleMouseDraw);
-  addEventListener("keydown", moveCursorUsingKeys);
-  document.querySelector('#reset-btn').reset.addEventListener('click', clearCanvas);
+  document.addEventListener("keydown", toggleMouseDraw);
+  document.addEventListener("keyup", toggleMouseDraw);
+  document.addEventListener("keydown", moveCursorUsingKeys);
+  document.querySelector('#reset-btn').addEventListener('click', clearCanvas);
 };
 
 window.onload = main;
