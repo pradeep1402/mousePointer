@@ -3,17 +3,6 @@ class CanvasView {
     this.target = target;
   }
 
-  toggleMouseDraw = (event, dot) => {
-    if (!(event.key === 'Control')) return;
-
-    if (event.type === 'keydown') {
-      addEventListener("mousemove", this.drawShape(event, dot));
-      return;
-    }
-
-    removeEventListener('mousemove', this.drawShape);
-  };
-
   drawShape = ({ clientX, clientY }, classList = ['dot']) => {
     const div = document.createElement("div");
     div.style.top = `${clientY}px`;
@@ -22,13 +11,9 @@ class CanvasView {
     this.target.appendChild(div);
   };
 
-  moveCursorUsingKeys = ({ code }) => {
-    drawUsingArrowKeys(code, this.target);
-  };
-
   clearCanvas = () => {
-    const dots = document.querySelectorAll('dot');
-    dots.forEach(dot => dot.removeChild());
+    const shapes = Array.from(this.target.children);
+    shapes.forEach(shape => this.target.removeChild(shape));
   };
 }
 
