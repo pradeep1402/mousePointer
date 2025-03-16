@@ -3,7 +3,7 @@ class CanvasView {
     this.target = parent;
   }
 
-  drawShape = ({ x, y, shape = ['dot'] }) => {
+  draw = ({ x, y, shape = ['dot'] }) => {
     const div = document.createElement("div");
     div.style.top = `${y}px`;
     div.style.left = `${x}px`;
@@ -17,8 +17,7 @@ class CanvasView {
   };
 
   clearCanvas = () => {
-    const shapes = Array.from(this.target.children);
-    shapes.forEach(shape => this.target.removeChild(shape));
+    this.target.innerHTML = "";
   };
 }
 
@@ -26,34 +25,36 @@ class CanvasController {
   constructor(view, canvas) {
     this.view = view;
     this.model = canvas;
-    this.handler = this.#mousemoveHandler.bind(this);
+    this.mouseMoveHandler = this.#mouseHandler.bind(this);
   }
 
-  #mousemoveHandler({ clientX, clientY }) {
+  #mouseHandler({ clientX, clientY }) {
     const coordinates = this.model.setNextPosition({ x: clientX, y: clientY });
-    this.view.drawShape(coordinates);
+    this.view.draw(coordinates);
   }
 
   keyPressHandler(event) {
-    const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-    if (arrowKeys.includes(event.key) && event.type === 'keydown') {
-      this.drawUsingArrowKeys(event.code);
-      return;
+    if (event.key === 'Control') {
+      this.#toggleMouseDraw(event.type);
     }
 
-    if (!(event.key === 'Control')) return;
-
-    this.#toggleMouseDraw(event.type);
+    this.handleArrowKeyPress(event.code);
   }
 
+  handleArrowKeyPress(event) {
+    const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+    if (event.type === 'keydown' && arrowKeys.includes(event.key)) {
+      this.drawUsingArrowKeys(event.code);
+    }
+  }
 
   #toggleMouseDraw(type) {
     if (type === 'keydown') {
-      this.view.target.addEventListener("mousemove", this.handler);
+      this.view.target.addEventListener("mousemove", this.mouseMoveHandler);
       return;
     }
 
-    this.view.target.removeEventListener("mousemove", this.handler);
+    this.view.target.removeEventListener("mousemove", this.mouseMoveHandler);
   };
 
   drawUsingArrowKeys = (code) => {
@@ -71,14 +72,14 @@ class CanvasController {
     code in arrowKeys && arrowKeys[code]();
 
     if (this.view.isInBoundary(newX, newY)) {
-      this.handler({ clientX: newX, clientY: newY });
+      this.mouseMoveHandler({ clientX: newX, clientY: newY });
     }
   };
 
   reset() {
-    this.model.removeAllPosition();
+    this.model.clearPosition();
     this.view.clearCanvas();
-    this.view.target.removeEventListener("mousemove", this.handler);
+    this.view.target.removeEventListener("mousemove", this.mouseMoveHandler);
   }
 }
 
@@ -91,7 +92,7 @@ class CanvasModel {
     return this.positions.at(-1);
   }
 
-  removeAllPosition() {
+  clearPosition() {
     this.deletedPos = [...this.positions];
     this.positions = [];
     return this.positions;
