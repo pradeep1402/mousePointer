@@ -38,7 +38,7 @@ class CanvasController {
       this.#toggleMouseDraw(event.type);
     }
 
-    this.handleArrowKeyPress(event.code);
+    this.handleArrowKeyPress(event);
   }
 
   handleArrowKeyPress(event) {
@@ -81,6 +81,13 @@ class CanvasController {
     this.view.clearCanvas();
     this.view.target.removeEventListener("mousemove", this.mouseMoveHandler);
   }
+
+  undoChange() {
+    this.view.clearCanvas();
+    this.model.undo().forEach(position => {
+      this.view.draw(position);
+    });
+  }
 }
 
 class CanvasModel {
@@ -98,8 +105,8 @@ class CanvasModel {
     return this.positions;
   }
 
-  undoChange() {
-    this.deletedPos = [...this.deletedPos, this.positions.pop()];
+  undo() {
+    this.deletedPos.push(this.positions.pop());
     return this.positions;
   }
 }
@@ -112,6 +119,7 @@ const main = () => {
   document.addEventListener('keydown', event => controller.keyPressHandler(event));
   document.addEventListener('keyup', event => controller.keyPressHandler(event));
   document.querySelector('#reset').addEventListener('click', event => controller.reset(event));
+  document.querySelector('#undo').addEventListener('click', event => controller.undoChange(event));
 };
 
 window.onload = main;
