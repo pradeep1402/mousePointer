@@ -56,10 +56,28 @@ class CanvasController {
   };
 }
 
+class CanvasModel {
+  drawPosition = [];
+
+  constructor(drawPosition) {
+    this.drawPosition = drawPosition;
+  }
+
+  drawNextShape(coordinates, shape = 'dot') {
+    this.drawPosition.push({ coordinates, shape });
+    return this.drawPosition.at(-1);
+  }
+
+  undoChange() {
+    this.drawPosition.pop();
+  }
+}
+
 const main = () => {
   const parent = document.querySelector('canvas');
-  const canvas = new CanvasView(parent);
-
+  const canvas = new CanvasModel();
+  const canvasView = new CanvasView(parent);
+  const controller = new CanvasController(canvasView);
 };
 
 window.onload = main;
